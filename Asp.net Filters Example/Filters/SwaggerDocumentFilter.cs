@@ -35,13 +35,19 @@ namespace Asp.net_Filters_Example.Filters
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
             var clientName = _httpContext.Request.Query["client"].FirstOrDefault();
-            if (clientName != null && filterData.ContainsKey(clientName)) 
-            { 
-                var keys = swaggerDoc.Paths.Keys;
-                var controllersToRemove = keys.Where(b => filterData[clientName].Any(a => b.Substring(1).StartsWith(a)));
-                foreach( var swaggerPath in controllersToRemove) 
+            if (clientName != null)
+            {
+                if (filterData.ContainsKey(clientName))
                 {
-                    swaggerDoc.Paths.Remove(swaggerPath);
+                    var keys = swaggerDoc.Paths.Keys;
+                    var controllersToRemove = keys.Where(b => filterData[clientName].Any(a => b.Substring(1).StartsWith(a)));
+                    foreach (var swaggerPath in controllersToRemove)
+                    {
+                        swaggerDoc.Paths.Remove(swaggerPath);
+                    }
+                } else
+                {
+                    swaggerDoc.Paths.Clear();
                 }
             }
         }
